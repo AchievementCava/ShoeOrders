@@ -3,166 +3,241 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { m } from '$lib/paraglide/messages.js';
-  import { Colour, Shoe } from '$lib/types/Shoe';
-  import { 
-    userDataValid, 
-    orderDataValid,
-    addShoe,
-    removeShoe,
-    newShoe
-  } from '$lib/validation/orderForm';
+	import { Colour, Shoe } from '$lib/types/Shoe';
+	import {
+		userDataValid,
+		orderDataValid,
+		addShoe,
+		removeShoe,
+		newShoe
+	} from '$lib/validation/orderForm';
 
-  const colours = Object.values(Colour);
+	const colours = Object.values(Colour);
+	const tel_RE = /^01[0-9][ \-]?[0-9]{7,9}$/;
 
-  let shoes: Shoe[] = [];
+	let shoes: Shoe[] = [];
 
-  shoes = addShoe(newShoe(), shoes);
+	shoes = addShoe(newShoe(), shoes);
 
-  let name: string = "";
-  let phone: string = "";
-  let state: string = "";
+	let name: string = '';
+	let phone: string = '';
+	let state: string = '';
+	let ic_no: string = '';
+	let club: string = 'None';
+	let street: string = '';
+	let postcode: string = '';
+	let town: string = '';
 
-  let userValid: boolean;
-  let shoesValid: boolean;
-  let formValid: boolean;
+	let userValid: boolean;
+	let shoesValid: boolean;
+	let formValid: boolean;
 
-  $: userValid = userDataValid(name, phone, state);
-  $: shoesValid = orderDataValid(shoes);
-  $: formValid = userValid && shoesValid;
+	$: userValid = userDataValid(name, phone, state);
+	$: shoesValid = orderDataValid(shoes);
+	$: formValid = userValid && shoesValid;
 
-  async function handleSubmit() {
-    if (!formValid) {
-      alert("{m.invalid_submit()}");
-      return;
-    }
+	function validatePhone(event: Event) {
+		const input_elem = event.target as HTMLInputElement;
+		const value = input_elem.value;
 
-    //logic here
-    try {
-      const response = await fetch('/api/order', {
-        method: 'POST',
-        handlers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name,
-          phone,
-          state,
-          shoes
-        })
-      });
+		if (!tel_RE.test(value)) {
+			// if the user input doesn't fit the pattern
+			input_elem.setCustomValidity(m.invalid_phone());
+		} else {
+			// number is fair and valid
+			input_elem.setCustomValidity('');
+		}
 
-      const result = await response.json();
+		input_elem.reportValidity();
+	}
 
-      if (response.ok){
-        alert(m.order_submit());
-      } else {
-        alert(`Error: $(result.error)`);
-      }
-    } catch (err) {
-      alert("Network or server error prevented form submission");
-    }
-  }
+	async function handleSubmit() {
+		if (!formValid) {
+			alert('{m.invalid_submit()}');
+			return;
+		}
+
+		//logic here
+		try {
+			const response = await fetch('/api/order', {
+				method: 'POST',
+				handlers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					name,
+					ic_no,
+					phone,
+					club,
+					street,
+					postcode,
+					town,
+					state,
+					shoes
+				})
+			});
+
+			const result = await response.json();
+			console.log(result);
+
+			if (response.ok) {
+				alert(m.order_submit());
+			} else {
+				alert(`Error: $(result.error)`);
+			}
+		} catch (err) {
+			alert('Network or server error prevented form submission');
+			console.log(err);
+		}
+	}
 </script>
 
-<header>
-
-</header>
+<header></header>
 
 <h1>{m.order_form()}</h1>
 
 <form on:submit|preventDefault={handleSubmit}>
-<table>
-	<thead></thead>
+	<table>
+		<thead></thead>
 
-	<tbody>
-		<tr>
-			<td><label for="name" required>{m.name()}: </label></td>
-			<td><input type="text" name="name" bind:value={name} required /></td>
-		</tr>
+		<tbody>
+			<tr>
+				<td><label for="name" required>{m.name()}: </label></td>
+				<td><input type="text" name="name" bind:value={name} required /></td>
+			</tr>
 
-		<tr>
-			<td><label for="phone">{m.phone()}: </label></td>
-			<td><input type="text" name="phone" bind:value={phone} pattern="^01[0-9][ \-]?[0-9]{7,8}$" placeholder="0123456789" required /></td>
-		</tr>
+			<tr>
+				<td><label for="ic" required>{m.ic_no()}: </label></td>
+				<td
+					><input
+						type="text"
+						name="ic_no"
+						bind:value={ic_no}
+						placeholder="630916-10-1234"
+						required
+					/>
+					<!-->
+      TODO: copy over validation from IC.ts to here and error out before submit is allowed
+          <-->
+				</td>
+			</tr>
 
-		<tr>
-			<td><label for="state">{m.state()}: </label></td>
-			<td>
-				<select name="state" bind:value={state} required>
-					<option value="">{m.select()}</option>
-					<option value="Johor">Johor</option>
-					<option value="Kedah">Kedah</option>
-					<option value="Kelantan">Kelantan</option>
-					<option value="Melaka">Melaka</option>
-					<option value="N9">Negeri Sembilan</option>
-					<option value="Pahang">Pahang</option>
-					<option value="Penang">Penang</option>
-					<option value="Perak">Perak</option>
-					<option value="Perlis">Perlis</option>
-					<option value="Sabah">Sabah</option>
-					<option value="Sarawak">Sarawak</option>
-					<option value="Selangor">Selangor</option>
-					<option value="Terengganu">Terengganu</option>
-					<option value="KL">WP Kuala Lumpur</option>
-					<option value="Labuan">WP Labuan</option>
-					<option value="Putrajaya">WP Putrajaya</option>
-				</select>
-      </td>
-		</tr>
-  </tbody>
+			<tr>
+				<td><label for="phone">{m.phone()}: </label></td>
+				<td
+					><input
+						type="text"
+						name="phone"
+						bind:value={phone}
+						on:input={validatePhone}
+						placeholder="0123456789"
+						required
+					/></td
+				>
+			</tr>
 
-</table>
+			<!--> TODO: Do you play rugby with a club? <-->
 
-<h4>{m.orders()}</h4>
+			<tr>
+				<td><label for="club" required>{m.club()}: </label></td>
+				<td><input type="text" name="club" bind:value={club} required /> </td>
+			</tr>
 
-<!--> This part needs to be dynamically generated and named/ID-ed for submission <-->
-<table>
-  <tbody>
-    {#each shoes as shoe, i (i)}
-    <tr>
-      
-      <td>
-        <input  type='hidden' name="index{i}" value={shoe.number}>
-        <label class='shoeLabel' for="id{i}">{m.prod_id()}</label>
-        <input type='text' name='id{i}' bind:value="{shoe.id}"required />
-      </td>
-  
-      <td>
-        <label class='shoeLabel' for="colour{i}">{m.colour()}</label>
-        <select bind:value={shoe.colour} name="colour{i}" required>
-        <option value="" disabled selected>{m.select()}</option>
-          {#each colours as col}
-            <option value={col}>{m[`colour_${col}`]()}</option>
-          {/each}
-        </select>
-      </td>
+			<tr>
+				<td><label for="street" required>{m.street()}: </label></td>
+				<td><input type="text" name="street" bind:value={street} required /> </td>
+			</tr>
 
-      <td>
-        <label class='shoeLabel' for="size{i}">{m.size()}</label>
-        <input type='number' name="size{i}" bind:value="{shoe.size}" min='4' required />
-      </td>
+			<!--> TODO: Postcode to state conversion <-->
+			<tr>
+				<td><label for="postcode" required>{m.postcode()}: </label></td>
+				<td><input type="number" name="postcode" bind:value={postcode} required /> </td>
+			</tr>
 
-      <td>
-        <label class='shoeLabel' for="quantity{i}">{m.quantity()}</label>
-        <input type='number' name="quantity{i}" bind:value="{shoe.quantity}" required />
-      </td>
+			<tr>
+				<td><label for="city" required>{m.postTown()}: </label></td>
+				<td><input type="text" name="city" bind:value={town} required /> </td>
+			</tr>
 
-      <td>
-      {#if shoes.length > 1} 
-        <button type='button' on:click={() => (shoes = removeShoe(shoe.number, shoes))}>del</button>
-      {/if}
-      </td>
+			<tr>
+				<td><label for="state">{m.state()}: </label></td>
+				<td>
+					<select name="state" bind:value={state} required>
+						<option value="">{m.select()}</option>
+						<option value="Johor">Johor</option>
+						<option value="Kedah">Kedah</option>
+						<option value="Kelantan">Kelantan</option>
+						<option value="Melaka">Melaka</option>
+						<option value="N9">Negeri Sembilan</option>
+						<option value="Pahang">Pahang</option>
+						<option value="Penang">Penang</option>
+						<option value="Perak">Perak</option>
+						<option value="Perlis">Perlis</option>
+						<option value="Sabah">Sabah</option>
+						<option value="Sarawak">Sarawak</option>
+						<option value="Selangor">Selangor</option>
+						<option value="Terengganu">Terengganu</option>
+						<option value="KL">WP Kuala Lumpur</option>
+						<option value="Labuan">WP Labuan</option>
+						<option value="Putrajaya">WP Putrajaya</option>
+					</select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 
-    </tr>
-    {/each}
-  </tbody>
-</table>
+	<h4>{m.orders()}</h4>
 
-<div class='spanPageWidth'>
-  <button type='button' id='add' on:click={() => (shoes = addShoe(newShoe(), shoes))}>{m.add_item()}</button>
-</div>
+	<!--> This part needs to be dynamically generated and named/ID-ed for submission <-->
+	<table>
+		<tbody>
+			{#each shoes as shoe, i (i)}
+				<tr>
+					<td>
+						<input type="hidden" name="index{i}" value={shoe.number} />
+						<label class="shoeLabel" for="id{i}">{m.prod_id()}</label>
+						<input type="text" name="id{i}" bind:value={shoe.id} required />
+					</td>
 
-<div class='spanPageWidth'>
-  <button type='submit' id='submit' disabled={!formValid}>{m.submit()}</button>
-</div>
+					<td>
+						<label class="shoeLabel" for="colour{i}">{m.colour()}</label>
+						<select bind:value={shoe.colour} name="colour{i}" required>
+							<option value="" disabled selected>{m.select()}</option>
+							{#each colours as col}
+								<option value={col}>{m[`colour_${col}`]()}</option>
+							{/each}
+						</select>
+					</td>
+
+					<td>
+						<label class="shoeLabel" for="size{i}">{m.size()}</label>
+						<input type="number" name="size{i}" bind:value={shoe.size} min="4" step='0.5' required />
+					</td>
+
+					<td>
+						<label class="shoeLabel" for="quantity{i}">{m.quantity()}</label>
+						<input type="number" name="quantity{i}" bind:value={shoe.quantity} required />
+					</td>
+
+					<td>
+						{#if shoes.length > 1}
+							<button type="button" on:click={() => (shoes = removeShoe(shoe.number, shoes))}
+								>del</button
+							>
+						{/if}
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+
+	<div class="spanPageWidth">
+		<button type="button" id="add" on:click={() => (shoes = addShoe(newShoe(), shoes))}
+			>{m.add_item()}</button
+		>
+	</div>
+
+	<div class="spanPageWidth">
+		<button type="submit" id="submit" disabled={!formValid}>{m.submit()}</button>
+	</div>
 </form>

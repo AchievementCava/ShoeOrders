@@ -7,13 +7,10 @@ export function newShoe() {
 }
 
 export function addShoe(shoe: Shoe, shoes: Shoe[]) {
-  console.log([...shoes,shoe]);
-  
-  return [...shoes, shoe];
+	return [...shoes, shoe];
 }
 
 export function removeShoe(counter: number, shoes: Shoe[]) {
-	console.log('Removing shoe with counter:', counter);
 	return shoes.filter((shoe) => shoe.number !== counter);
 }
 
@@ -35,7 +32,7 @@ export function isValidName(name: string): boolean {
 }
 
 export function isValidPhone(phone: string) {
-	const pattern = /^01[0-9][0-9]{7,8}$/;
+	const pattern = /^01[0-9][\ \-]?[0-9]{7,8}$/;
 	const disallowed = ['0123456789', '0169696969'];
 
 	return pattern.test(phone) && !disallowed.includes(phone);
