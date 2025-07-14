@@ -70,23 +70,74 @@ button:hover:not(:disabled) {
 	background-color: #005fa3;
 }
 
+button.delete {
+  background-color: white;
+  color: black;
+  font-size: 0.75rem;
+  padding: 1%;
+}
+
+button.delete:hover {
+  color: white;
+  background-color: red;
+}
+
+
 td {
 	vertical-align: top;
 }
 
-@media (max-width: 600px) {
-	table,
-	tr,
-	td {
-		display: block;
-		width: 100%;
-	}
-
-	td {
-		margin-bottom: 1rem;
-	}
-	color: green;
+#shoe-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
 }
+
+#shoe-table tr {
+  display: inline;
+  table-layout: fixed;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: block; /* Makes tr behave more like a div/card */
+  background-color: #add8e6; /* Optional: adds a card-like background */
+}
+
+#shoe-table td:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* or center, depending on your layout */
+  min-height: 3rem; /* adjust this if needed */
+  padding-top: 1rem;
+}
+
+#shoe-table td:last-child button {
+  margin-top: 0; /* in case buttons had default margins */
+}
+
+@media (max-width: 600px) {
+  #shoe-table thead {
+    display: none;
+  }
+
+  #shoe-table tr {
+    display: block;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ccc;
+  }
+
+  #shoe-table td {
+    display: block;
+    width: 100%;
+  }
+
+  #shoe-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
 
 .lang-toggle {
 	position: absolute;

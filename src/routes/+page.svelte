@@ -90,6 +90,7 @@
 			console.log(err);
 		}
 	}
+
 </script>
 
 <header></header>
@@ -189,7 +190,7 @@
 	<h4>{m.orders()}</h4>
 
 	<!--> This part needs to be dynamically generated and named/ID-ed for submission <-->
-	<table>
+	<table id='shoe-table'>
 		<tbody>
 			{#each shoes as shoe, i (i)}
 				<tr>
@@ -221,9 +222,9 @@
 
 					<td>
 						{#if shoes.length > 1}
-							<button type="button" on:click={() => (shoes = removeShoe(shoe.number, shoes))}
-								>del</button
-							>
+							<button type="button" class='delete' on:click={() => (shoes = removeShoe(shoe.number, shoes))}>
+                <span class='material-icons'>delete</span>
+              </button>
 						{/if}
 					</td>
 				</tr>
