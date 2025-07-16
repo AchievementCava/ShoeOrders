@@ -19,6 +19,7 @@ model User {
   ic        String   @id
   name      String
   tel       String
+  email     String
   club      String
   addressId Int
   address   Address  @relation(fields: [addressId], references: [id])

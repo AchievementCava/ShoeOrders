@@ -31,6 +31,7 @@ export async function storeOrder(order: OrderPayload) {
           ic: order.ic_no,
           name: order.name,
           tel: order.phone,
+          email: order.email,
           club: order.club,
           addressId: address.id,
         },

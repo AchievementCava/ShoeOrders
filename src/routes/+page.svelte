@@ -21,8 +21,10 @@
 
 	let name: string = '';
 	let phone: string = '';
+  let email: string = '';
 	let state: string = '';
 	let ic_no: string = '';
+  let player: boolean;
 	let club: string = 'None';
 	let street: string = '';
 	let postcode: string = '';
@@ -68,6 +70,7 @@
 					name,
 					ic_no,
 					phone,
+          email,
 					club,
 					street,
 					postcode,
@@ -109,40 +112,48 @@
 
 			<tr>
 				<td><label for="ic" required>{m.ic_no()}: </label></td>
-				<td
-					><input
+				<td>
+          <input
 						type="text"
 						name="ic_no"
 						bind:value={ic_no}
 						placeholder="630916-10-1234"
+            pattern="\d{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[ |\-]?(0[1-9]|1[0-6]|2[1-9]|[3-5][0-9]|6[0-8]|7[1-2]|7[4-9]|8[2-9]|9[0-3]|9[89])[ |\-]?\d{4}$"
 						required
 					/>
-					<!-->
-      TODO: copy over validation from IC.ts to here and error out before submit is allowed
-          <-->
 				</td>
 			</tr>
 
 			<tr>
 				<td><label for="phone">{m.phone()}: </label></td>
-				<td
-					><input
+				<td>
+          <input
 						type="text"
 						name="phone"
 						bind:value={phone}
 						on:input={validatePhone}
 						placeholder="0123456789"
 						required
-					/></td
-				>
+					/>
+        </td>
 			</tr>
 
-			<!--> TODO: Do you play rugby with a club? <-->
+      <tr>
+        <td><label for='email'>{m.email()}: </label></td>
+        <td><input type='email' name='email' bind:value={email} required></td>
+      </tr>
 
-			<tr>
-				<td><label for="club" required>{m.club()}: </label></td>
-				<td><input type="text" name="club" bind:value={club} required /> </td>
-			</tr>
+      <tr>
+        <td><label for="player">{m.player()}</label></td>
+        <td><input type='checkbox' name='player' bind:checked={player} /> </td>
+      </tr>
+      
+      {#if player == true}
+        <tr>
+          <td><label for="club">{m.club()}: </label></td>
+          <td><input type="text" name="club" bind:value={club} required /> </td>
+        </tr>
+      {/if}      
 
 			<tr>
 				<td><label for="street" required>{m.street()}: </label></td>
@@ -181,6 +192,7 @@
 						<option value="KL">WP Kuala Lumpur</option>
 						<option value="Labuan">WP Labuan</option>
 						<option value="Putrajaya">WP Putrajaya</option>
+            <option value="Foreign">{m.foreign()}</option>
 					</select>
 				</td>
 			</tr>
@@ -220,13 +232,13 @@
 						<input type="number" name="quantity{i}" bind:value={shoe.quantity} required />
 					</td>
 
-					<td>
-						{#if shoes.length > 1}
+					  <td>
+					{#if shoes.length > 1}
 							<button type="button" class='delete' on:click={() => (shoes = removeShoe(shoe.number, shoes))}>
                 <span class='material-icons'>delete</span>
               </button>
-						{/if}
-					</td>
+					{/if}
+					  </td>
 				</tr>
 			{/each}
 		</tbody>

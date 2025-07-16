@@ -2,6 +2,7 @@ export type OrderPayload = {
 	name: string;
 	ic: string;
 	phone: string;
+  email: string;
 	club: string;
 	street: string;
 	postcode: number;
