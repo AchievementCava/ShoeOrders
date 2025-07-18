@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     ic = new IC(data['ic_no']);
   } catch(e) {
-    console.log("IC fail " + e + '\n' + JSON.stringify(data, null, 2));
+    console.log("2025-07-18 IC fail " + e + '\n' + JSON.stringify(data, null, 2));
     return new Response(
         JSON.stringify({ error: 'IC data was not valid!' }),
           {

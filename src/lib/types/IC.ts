@@ -13,7 +13,7 @@ export class IC {
       throw new Error("IC length invalid! Please use your (new) 12 digit IC number");
     }
 
-    const year:string = formatted_number.slice(0,2) > 22 ? 
+    const year:string = Number(formatted_number.slice(0,2)) > 22 ? 
       ("19"+formatted_number.slice(0,2)) : 
       ("20"+formatted_number.slice(0,2)) ;
 
@@ -23,12 +23,13 @@ export class IC {
 
     const dob = new Date(`${year}-${month}-${day}T00:00:00+08:00`);
 
-    if (dob === Date("NotAdate") ||
-       dob.getFullYear() != year || 
+    if ( isNaN(dob.getTime()) ||
+       String(dob.getFullYear()) !== year || 
        String(dob.getMonth() + 1).padStart(2, '0') !== month || 
-       String(dob.getDate()).padStart(2, '0') !== day)
+       String(dob.getDate() + 1).padStart(2, '0') !== day
+       )
     {
-      throw new Error("IC number had invalid date of birth - date rollover error!"); 
+      throw new Error(`IC number had invalid date of birth - date rollover error!\nYear: ${String(dob.getFullYear())}  ${year} \n ${String(dob.getMonth() + 1).padStart(2, '0')}  ${month} \n ${String(dob.getDate() + 1).padStart(2, '0')} ${day}`); 
     }
 
     const state = formatted_number.slice(6,8);
